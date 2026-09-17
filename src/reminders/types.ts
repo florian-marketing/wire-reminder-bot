@@ -1,3 +1,5 @@
+import type {StoredConversationId} from '../common/ConversationId.js'
+
 export type Weekday = 'mon' | 'tue' | 'wed' | 'thu' | 'fri' | 'sat' | 'sun'
 
 export type Schedule =
@@ -5,10 +7,7 @@ export type Schedule =
   | {type: 'daily'; time: string}
   | {type: 'weekly'; days: Weekday[]; time: string}
 
-export interface StoredConversationId {
-  id: string
-  domain: string
-}
+export type {StoredConversationId}
 
 export interface Reminder {
   id: number

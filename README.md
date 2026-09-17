@@ -1,8 +1,8 @@
 # wire-reminder-bot
 
 A Wire App built on `@wireapp/wire-apps-js-sdk`. Add it to any conversation and
-it lets people in that chat schedule recurring or one-off reminder messages —
-e.g. a daily "good morning" or a weekly nudge to fill in a shared sheet.
+it gives people in that chat two things: scheduled reminder messages (daily,
+weekly, or one-off) and the ability to pin messages by reacting to them.
 
 ## 1. Prerequisites (do this before the code will run)
 
@@ -57,7 +57,7 @@ npm run build && npm start
 ```
 
 As a team admin, add the app to a conversation — it posts a greeting with the
-command list. From then on, anyone in that chat can manage reminders there.
+command list. From then on, anyone in that chat can manage reminders and pins there.
 
 ## 5. Keep it running (macOS, via launchd)
 
@@ -108,16 +108,33 @@ no concept of individual members' timezones.
 Known limitation: if the bot process is down at the exact minute a reminder
 was due, that occurrence is simply skipped (no catch-up on restart).
 
+Pinning: react to any message with 📌 to pin it.
+
+```
+/pin                    same as /pin list
+/pin list               show pinned messages in this chat
+/pin remove <id>        unpin #id
+/pin help               show usage
+```
+
+Known limitations:
+- Only messages sent while the bot process has been running can be pinned —
+  it looks up the message text from a short-lived in-memory cache, not from
+  Wire's history, so a restart clears what's pinnable (already-pinned
+  messages stay pinned; only the "react to pin" lookup is affected).
+- Pinned/unpinned is a single state per message, not tracked per user — if
+  two people pin the same message and one of them removes their own
+  reaction, it unpins for everyone.
+
 ## Where the logic lives
 
 - [src/config.ts](src/config.ts) — loads and validates env vars
-- [src/reminders/types.ts](src/reminders/types.ts) — `Reminder`/`Schedule` shapes
-- [src/reminders/CommandParser.ts](src/reminders/CommandParser.ts) — parses `/remind ...` text into commands
-- [src/reminders/TimeUtils.ts](src/reminders/TimeUtils.ts) — timezone-aware date/time helpers
-- [src/reminders/ReminderStore.ts](src/reminders/ReminderStore.ts) — JSON-file persistence, keyed per conversation
-- [src/reminders/ReminderScheduler.ts](src/reminders/ReminderScheduler.ts) — polls for due reminders and fires them
-- [src/ReminderHandler.ts](src/ReminderHandler.ts) — the `WireEventsHandler` subclass wiring commands to replies
-- [src/index.ts](src/index.ts) — wires up the SDK, store, and scheduler, and starts listening
+- [src/common/tokenize.ts](src/common/tokenize.ts) — shared command-text tokenizer
+- [src/common/ConversationId.ts](src/common/ConversationId.ts) — shared conversation id shape
+- [src/reminders/](src/reminders/) — schedule parsing, storage, and the polling scheduler
+- [src/pins/](src/pins/) — pin command parsing, storage, and the recent-message cache
+- [src/BotHandler.ts](src/BotHandler.ts) — the `WireEventsHandler` subclass wiring commands/reactions to replies
+- [src/index.ts](src/index.ts) — wires up the SDK, stores, cache, and scheduler, and starts listening
 
 ## Docs
 
