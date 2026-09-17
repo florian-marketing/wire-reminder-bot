@@ -22,3 +22,8 @@ export const CRYPTOGRAPHY_STORAGE_KEY: Uint8Array = Uint8Array.from(Buffer.from(
 if (CRYPTOGRAPHY_STORAGE_KEY.length !== 32) {
   throw new Error('WIRE_SDK_STORAGE_KEY must decode to exactly 32 bytes of hex')
 }
+
+// IANA timezone used to interpret all reminder times (e.g. "09:00" in /remind commands).
+export const REMINDER_TIMEZONE: string = process.env['REMINDER_TIMEZONE'] ?? 'Europe/Berlin'
+
+export const REMINDERS_FILE: string = process.env['REMINDERS_FILE'] ?? './data/reminders.json'
