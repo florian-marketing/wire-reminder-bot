@@ -27,5 +27,3 @@ if (CRYPTOGRAPHY_STORAGE_KEY.length !== 32) {
 export const REMINDER_TIMEZONE: string = process.env['REMINDER_TIMEZONE'] ?? 'Europe/Berlin'
 
 export const REMINDERS_FILE: string = process.env['REMINDERS_FILE'] ?? './data/reminders.json'
-
-export const PINS_FILE: string = process.env['PINS_FILE'] ?? './data/pins.json'
