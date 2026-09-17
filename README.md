@@ -59,6 +59,33 @@ npm run build && npm start
 As a team admin, add the app to a conversation — it posts a greeting with the
 command list. From then on, anyone in that chat can manage reminders there.
 
+## 5. Keep it running (macOS, via launchd)
+
+Once `.env` has real credentials, run it as a background service that survives
+crashes and reboots instead of a foreground `npm run dev`:
+
+```bash
+npm run build
+cp deploy/com.florianfrese.wire-reminder-bot.plist ~/Library/LaunchAgents/
+launchctl load ~/Library/LaunchAgents/com.florianfrese.wire-reminder-bot.plist
+```
+
+Logs land in `~/Library/Logs/wire-reminder-bot/`. Useful commands:
+
+```bash
+launchctl unload ~/Library/LaunchAgents/com.florianfrese.wire-reminder-bot.plist   # stop
+launchctl load ~/Library/LaunchAgents/com.florianfrese.wire-reminder-bot.plist     # start
+tail -f ~/Library/Logs/wire-reminder-bot/out.log                                  # watch logs
+```
+
+After changing code, re-run `npm run build` then unload/load to pick it up.
+
+Caveats of running this on a personal Mac rather than a server: it only stays
+connected while the machine is powered on, awake, and you're logged in — if
+the laptop sleeps (e.g. lid closed), the connection drops until it wakes.
+Disable sleep (System Settings → Lock Screen / Battery) if you need this to
+be reliably always-on, or move it to a real server/VM later.
+
 ## Commands
 
 Sent as plain text messages in the conversation, times are 24h `HH:MM`:
